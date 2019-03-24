@@ -1,9 +1,9 @@
 const MongoClient = require('mongodb').MongoClient;
-const url = process.env.MONGODB_URI || 'mongodb://localhost:27017'
-const dbName = 'test';
+const url = 'mongodb://localhost/notes'
+const dbName = 'notes';
 const express = require('express');
 
-var port = process.env.PORT || 3000;
+var port = 3000;
 var app = express.Router();
 
 app.use(express.json());
@@ -12,36 +12,103 @@ app.get("/hello", (req, res) => {
   res.send("Hello World\n");
 })
 
-app.put('/', async (req, res) => {
-    const client = new MongoClient(url);
-    const message = req.body.msg;
+app.put('/',  async function(req, res){
 
-    console.log("Message: \n" + message + "\n");
+    var client = new MongoClient(url);
 
-    (async function(){
-        try{
-          await client.connect();
-          console.log("Connected to database");
+    let user_message = {
+      userId: 1,
+      content: req.body.content,
+      createdAt: getTodayDate(),
+      lastUpdatedAt: null
+    }
 
-          const db = client.db(dbName);
 
-          // Insert a single document
-          let r = await db.collection('messages').insertOne(user_message);
-          const col = await db.collection('messages').find().toArray();
-          console.log(col);
+    client.connect()
+    .then(async function(response){
+      console.log("Connected to database")
+      const db = client.db(dbName);
 
-        } catch(err){
-          console.log(err.stack);
-        }
-    })();
+      // Insert a single document
+      let r = await db.collection('notes').insertOne(user_message);
+      res.send('New note successfully added !!\n');
+      const col = await db.collection('notes').find().toArray();
+      console.log(col);
+    }).catch(function(error){
+      console.log("Error server " + error.stack)
+    });
 
-  res.send('New note successfully added !!\n');
+    client.close();
 });
 
 
-app.delete('/:id', (res, req) => {
-  res.send('Note successfully deleted !!\n');
+app.get('/all', function(req, res){
+
+    var client = new MongoClient(url);
+
+    client.connect()
+    .then(async function(response){
+      console.log("Connected to database")
+      const db = client.db(dbName);
+      const col = await db.collection('notes').find().toArray();
+      res.send(JSON.stringify(col));
+      console.log("\nAll notes: \n" + (JSON.stringify(col)));
+    }).catch(function(error){
+      if (err.name === 'UnauthorizedError') {
+        res.send(401, 'Utilisateur non connecté');
+      }else{
+        console.log("Error server " + error.stack)
+      }
+    });
+
+    client.close();
+})
+
+app.patch('/:id', function(req, res){
+  console.log("Note successfulu updated !!!");
+})
+
+// app.delete('/:id', (req, res) => {
+//   res.send('Note successfully deleted !!\n');
+// });
+
+app.delete('/deleteLast', function(req, res){
+    var client = new MongoClient(url);
+
+    client.connect()
+    .then(async function(response){
+        await client.connect();
+        const db = client.db(dbName);
+        console.log("Connected to database");
+
+        var all_messages = await db.collection('notes').find().toArray();
+        await db.collection('notes').deleteOne(all_messages[all_messages.length - 1]);
+        all_messages = await db.collection('notes').find().toArray();
+        console.log("All messages: " + (JSON.stringify(all_messages)) + "\n");
+        res.send(all_messages)
+    }).catch(function(error){
+        console.log("Error server " + error.stack)
+    });
+
+    client.close();
 });
+
+function getTodayDate(){
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; //January is 0!
+
+    var yyyy = today.getFullYear();
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+    var today = dd + '/' + mm + '/' + yyyy;
+    console.log("Today's date = " + today);
+    return today;
+}
 
 
 module.exports = app;
