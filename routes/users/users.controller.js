@@ -46,7 +46,7 @@ var maj = /[A-Z]/g;
               const insertNewUser = await db.collection('users').insertOne(newUser);
               const token = jwt.sign({ sub: username
                                 }, JWT_KEY
-                                , { expiresIn: '0.01h'});
+                                , { expiresIn: '24h'});
               res.status(200).send({
                 token,
                 error: null
@@ -82,7 +82,7 @@ var maj = /[A-Z]/g;
           } else {
             const token = jwt.sign({ sub: username, userid: sameUserNameInDb[0]._id
                               }, JWT_KEY
-                              , { expiresIn: '0.05h'});
+                              , { expiresIn: '24h'});
             let json = {
               ACTUAL_CO_USER_JWT: token
             }
