@@ -5,20 +5,14 @@
   const jwt = require('jsonwebtoken');
   const config = require('../config.json');
 
-  const url = 'mongodb://localhost:27017'
-  const dbName = 'notesDb';
+  const url = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+  const JWT_KEY = process.env.JWT_KEY || 'JWT_SECRET_VAL';
+  const dbName = 'notes';
 
   var autoIncUserId = 0;
   var connectedUserId = 1;
-  var port = 3000;
   var app = express.Router();
 
-
-  // Prints Hello World :)
-  // OK
-  app.get("/hello", (req, res) => {
-    res.send("Hello World\n");
-  })
 
   // Inserts a note in the db
   // OK
@@ -30,7 +24,7 @@
         console.log("Connected to database");
         const token = req.get('x-access-token');
 
-        await jwt.verify(token, config.JWT_KEY, async function(err, decoded){
+        await jwt.verify(token, JWT_KEY, async function(err, decoded){
           if(err){
             res.status(401).send({
               error: "Utilisateur non connecté"
@@ -75,7 +69,7 @@
         console.log("Connected to database")
         const token = req.get('x-access-token');
 
-        await jwt.verify(token, config.JWT_KEY, async function(err, decoded){
+        await jwt.verify(token, JWT_KEY, async function(err, decoded){
           if(err){
             res.status(401).send({
               error: "Utilisateur non connecté"
@@ -114,7 +108,7 @@
         console.log("successfully connected to database !!");
         const token = req.get('x-access-token');
 
-        await jwt.verify(token, config.JWT_KEY, async function(err, decoded){
+        await jwt.verify(token, JWT_KEY, async function(err, decoded){
             if(err){
               res.status(401).send({
                 error: "Utilisateur non connecté"
@@ -166,7 +160,7 @@
       .then(async function(response){
         const token = req.get('x-access-token');
 
-        await jwt.verify(token, config.JWT_KEY, async function(err, decoded){
+        await jwt.verify(token, JWT_KEY, async function(err, decoded){
           if(err){
             res.status(401).send({
               error: "Utilisateur non connecté"

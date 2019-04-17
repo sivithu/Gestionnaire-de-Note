@@ -2,7 +2,7 @@
   const jwt = require('jsonwebtoken');
   const MongoClient = require('mongodb').MongoClient;
   const url = 'mongodb://localhost:27017'
-  const dbName = 'notesDb';
+  const dbName = 'notes';
 
 
     var ObjectId = require('mongodb').ObjectId;

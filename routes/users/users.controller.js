@@ -8,12 +8,13 @@ const md5 = require('md5');
 const fs = require('fs');
 
 const router = express.Router();
-const url = 'mongodb://localhost:27017'
-const dbName = 'notesDb';
-
+const url = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const JWT_KEY = process.env.JWT_KEY || 'JWT_SECRET_VAL';
+const dbName = 'notes';
 
 var format = /[!@#$%^&*(),.?":{}|<>]/g;
 var maj = /[A-Z]/g;
+
 
   // routes
   router.use(express.json());
@@ -44,7 +45,7 @@ var maj = /[A-Z]/g;
 
               const insertNewUser = await db.collection('users').insertOne(newUser);
               const token = jwt.sign({ sub: username
-                                }, config.JWT_KEY
+                                }, JWT_KEY
                                 , { expiresIn: '0.01h'});
               res.status(200).send({
                 token,
@@ -80,7 +81,7 @@ var maj = /[A-Z]/g;
             });
           } else {
             const token = jwt.sign({ sub: username, userid: sameUserNameInDb[0]._id
-                              }, config.JWT_KEY
+                              }, JWT_KEY
                               , { expiresIn: '0.05h'});
             let json = {
               ACTUAL_CO_USER_JWT: token
