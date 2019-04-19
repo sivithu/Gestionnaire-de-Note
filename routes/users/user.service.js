@@ -111,7 +111,6 @@
       });
     }
 
-
     async function signInCheckingParams(userName, password){
       if(password.length < 4){
         return {

@@ -9,13 +9,8 @@
   const JWT_KEY = process.env.JWT_KEY || 'JWT_SECRET_VAL';
   const dbName = 'notes';
 
-  var autoIncUserId = 0;
-  var connectedUserId = 1;
   var app = express.Router();
 
-  app.get('/hour', async function(req, res){
-    console.log(getTodayDate());
-  })
   // Inserts a note in the db
   // OK
   app.put('/',  async function(req, res){
@@ -199,31 +194,6 @@
       });
   })
 
-  // Delete the last notes added
-  // OK
-  /*app.delete('/deleteLast', function(req, res){
-      var client = new MongoClient(url);
-
-      client.connect()
-      .then(async function(response){
-          await client.connect();
-          const db = client.db(dbName);
-          console.log("Connected to database");
-
-          var all_messages = await db.collection('notes').find().toArray();
-          await db.collection('notes').deleteOne(all_messages[all_messages.length - 1]);
-          all_messages = await db.collection('notes').find().toArray();
-          console.log("All messages: " + (JSON.stringify(all_messages)) + "\n");
-          res.send(all_messages)
-      }).catch(function(error){
-          console.log("Error server " + error.stack)
-          res.status(500).send({error: error})
-      });
-
-      client.close();
-  });*/
-
-
   // Returns the date of today
   // OK
   function getTodayDate(){
@@ -288,4 +258,5 @@
       }
       return true;
   }
+
 module.exports = app;
