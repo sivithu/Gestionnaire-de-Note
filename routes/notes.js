@@ -11,50 +11,6 @@
 
   var app = express.Router();
 
-  // Inserts a note in the db
-  // OK
-  app.put('/',  async function(req, res){
-      var client = new MongoClient(url);
-
-      client.connect()
-      .then(async function(response){
-        console.log("Connected to database");
-        const token = req.get('x-access-token');
-
-        await jwt.verify(token, JWT_KEY, async function(err, decoded){
-          if(err){
-            res.status(401).send({
-              error: "Utilisateur non connecté"
-            })
-          } else {
-              const db = client.db(dbName);
-              const user_message = {
-                userId: decoded.userid,
-                content: req.body.content,
-                createdAt: getTodayDate(),
-                lastUpdatedAt: null,
-              }
-
-              const r = await db.collection('notes').insertOne(user_message);
-              console.log('New note successfully added !!\n');
-              const col = await db.collection('notes').find().toArray();
-
-              client.close();
-              res.send({
-                  error: null,
-                  note: user_message
-                }
-              );
-          }
-        });
-      }).catch(function(error){
-          console.log("Error server " + error.stack)
-          res.send({
-            error: error.message,
-            notes: []
-          });
-      });
-  });
 
   // OK
   // Gets all the notes added in the base
@@ -74,25 +30,67 @@
           } else {
             const db = client.db(dbName);
             const col = await db.collection('notes').find().sort({createdAt: -1}).toArray();
-            const notes = {
-              note: col,
-              error: null
-            };
 
             client.close();
             res.send({
-              notes
+              error: null,
+              note: col
             });
           }
         });
       }).catch(function(error){
           console.log("Error server " + error.stack);
           res.send({
-            notes: [],
-            error: error.stack
+            error: error.stack,
+            notes: []
           });
       });
   })
+
+
+  // Inserts a note in the db
+  // OK
+  app.put('/',  async function(req, res){
+      var client = new MongoClient(url);
+
+      client.connect()
+      .then(async function(response){
+        const token = req.get('x-access-token');
+
+        await jwt.verify(token, JWT_KEY, async function(err, decoded){
+          if(err){
+            res.status(401).send({
+              error: "Utilisateur non connecté"
+            })
+          } else {
+              const db = client.db(dbName);
+              const user_message = {
+                userId: decoded.userid,
+                content: req.body.content,
+                createdAt: getTodayDate(),
+                lastUpdatedAt: null,
+              }
+
+              const r = await db.collection('notes').insertOne(user_message);
+              const col = await db.collection('notes').find().toArray();
+
+              client.close();
+              res.send({
+                  error: null,
+                  note: user_message
+                }
+              );
+          }
+        });
+      }).catch(function(error){
+          console.log("Error server " + error.stack)
+          res.send({
+            error: error.message,
+            notes: []
+          });
+      });
+  });
+
 
   // Updates a note from db with it'ss id given in url params
   // OK
@@ -102,7 +100,6 @@
 
     client.connect()
       .then(async (response) => {
-        console.log("successfully connected to database !!");
         const token = req.get('x-access-token');
 
         await jwt.verify(token, JWT_KEY, async function(err, decoded){
@@ -130,18 +127,21 @@
 
                       res.status(200).send({
                         error: null,
-                        note: updatedNote
+                        note: updatedNote[0]
                       });
                   }
                 }).catch(error =>{
-                  console.log(error);
+                  res.send({
+                    error: err.stack,
+                    notes: null
+                  });
                 });
             }
         });
       }).catch((err) => {
           res.send({
-            notes: [],
-            error: err.stack
+            error: err.stack,
+            notes: null
           });
       })
 
@@ -164,7 +164,6 @@
             })
           } else{
             const db = client.db(dbName);
-            console.log("Connected to database");
             const noteId = req.params.id.split('id=')[1];
 
             const noteToDelete = await db.collection('notes').find({ _id: ObjectId(noteId) }).toArray();
@@ -179,18 +178,19 @@
                           notes: allNotes
                         });
                         client.close();
-                        console.log("Note successfully deleted !!!")
                     }
                   }).catch(err => {
                     res.status(500).send({
                       error: "Server error: " + err
-                    })
+                    });
                   });
           }
         });
       }).catch(function(error){
           console.log("Error server " + error.stack)
-          res.status(500).send({error: error})
+          res.status(500).send({
+            error: error
+          });
       });
   })
 

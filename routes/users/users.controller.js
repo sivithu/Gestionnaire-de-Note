@@ -83,11 +83,6 @@ var maj = /[A-Z]/g;
             const token = jwt.sign({ sub: username, userid: sameUserNameInDb[0]._id
                               }, JWT_KEY
                               , { expiresIn: '24h'});
-            let json = {
-              ACTUAL_CO_USER_JWT: token
-            }
-            fs.writeFileSync('users_token.json', JSON.stringify(json));
-
             res.status(200).send({
               token,
               error: null
