@@ -12,6 +12,8 @@ Cette API pourra ensuite être consommée par une application mobile (Android ou
 
   `$ git clone https://github.com/RamzyK/Gestionnaire-de-Note.git`
 
+- Installer MongoDB sur votre post [Installer MongoDB](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/).
+
 - Pour lancer l'API en local :
 
   `$ npm run start`
