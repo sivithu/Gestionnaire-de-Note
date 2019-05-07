@@ -1,95 +1,104 @@
-# API  DE GESTION DE NOTES (Node.js)
+# Gestion de note de frais
 
-## Introduction
+Projet scolaire dont le but est de créer une api permettant la gestion de notes de frais en javascript et node.
 
-Cette application Node.js est un projet scolaire visant à créer une API de gestion de note avec un système d'authentification par JWT (JSON Web Token) avec une validité de 24h.
+Cette API pourra ensuite être consommée par une application mobile (Android ou IOS) pour permettre une utilisatation plus lisible et simple pour l'utilisateur.
 
-Cette API pourra ensuite être utilisé par une application mobile (Android ou IOS) pour permettre une utilisation plus facile.
 
-Application : [API](<https://tranquil-lake-66115.herokuapp.com/>)
 
 ## Installation
 
-- Pour clone le repo git :
+- Cloner le repo  :
 
-  ```git clone https://github.com/RamzyK/Gestionnaire-de-Note.git```
+  `$ git clone https://github.com/RamzyK/Gestionnaire-de-Note.git`
 
 - Pour lancer l'API en local :
 
-  ```npm run start```
+  `$ npm run start`
 
-- Pour tester l'API, veuillez installer [PostMan](<https://www.getpostman.com/>).
+- Les test de l'API peuvent se faire sur [PostMan](https://www.getpostman.com/).
 
-## Déploiement
+## Usage
 
-L'API constitue 6 routes :
+Après avoir cloné le projet, et lancer l'API en local vous aurez plusieurs routes à disposition pour gérer les utilisateurs et les notes :
 
-- <u>POST /signup</u>
+- POST /signup
 
-  Cette route permet de créer un compte utilisateur, à partir d'un identifiant et mot de passe choisis par l'utilisateur.
+Cette route permet de créer un compte utilisateur, à partir d'un identifiant et mot de passe choisis par l'utilisateur.
 
-  Le corps de la requête doit contenir :
+Le corps de la requête doit contenir :
 
-  - ***username*** : identifiant unique choisi par l'utilisateur.
-  - ***password*** : mot de passe choisi par l'utilisateur.
+- ***username*** : identifiant unique choisi par l'utilisateur.
+- ***password*** : mot de passe choisi par l'utilisateur.
 
-  *Exemple*:
+*Exemple*:
 
-  ​	```{ username : 'test', password : 'testfonc'}```
+​	`{ username : 'aaaa', password : 'password'}`
 
-- <u>POST /signin</u>
 
-  Cette route permet à un utilisateur de se connecter à son compte, en fournissant son identifiant et son mot de passe.
 
-  Le corps de la requête dit contenir :
+- POST /signin
 
-  - ***username*** : identifiant unique choisi par l'utilisateur.
-  - ***password*** : mot de passe choisi par l'utilisateur.
+Cette route permet à un utilisateur de se connecter à son compte, en fournissant son identifiant et son mot de passe.
 
-  *Exemple* :
+Le corps de la requête dit contenir :
 
-  ​	```{ username : 'test', password : 'test' }```
+- ***username*** : identifiant unique choisi par l'utilisateur.
+- ***password*** : mot de passe choisi par l'utilisateur.
 
-- <u>GET / notes</u>
+*Exemple* :
 
-  Cette route permet à un utilisateur connecté de lister ses notes, dans l'ordre anti-chronologique de création.
+​	`{ username : 'aaaa', password : 'aaaa' }`
 
-  Le jeton JWT de l'utilisateur connecté doit être fourni dans le header.
 
-- <u>PUT /notes</u></u>
 
-  Cette route permet à un utilisateur connecté d'ajouter une note'.
+- GET / notes
 
-  Le jeton JWT de l'utilisateur connecté doit être fourni dans le header.
+Cette route permet à un utilisateur connecté de lister ses notes, dans l'ordre anti-chronologique de création.
 
-  Le corps de la requête doit contenir :
+Le jeton JWT de l'utilisateur connecté doit être fourni dans le header.
 
-  - ***content*** : contenu de la note saisi par l'utilisateur
 
-  *Exemple* :
 
-  ​	```{content : 'Salut les amis'}```
+- PUT /notes
 
-- <u>PATCH /notes/:id</u>
+Cette route permet à un utilisateur connecté d'ajouter une note'.
 
-  Cette route permet à un utilisateur connecté de modifié une note existante.
+Le jeton JWT de l'utilisateur connecté doit être fourni dans le header.
 
-  Le jeton JWT de l'utilisateur connecté doit être fourni dans le header.
+Le corps de la requête doit contenir :
 
-  Le paramètre *id* doit contenir l'identifiant unique de la note à modifier.
+- ***content*** : contenu de la note saisi par l'utilisateur
 
-  Le corps de la requête doit contenir :
+*Exemple* :
 
-  - ***content*** : contenu de la note saisie par l'utilisateur. (mise à jour)
+​	`{content : 'Note'}`
 
-  *Exemple* :
 
-  ​	```{ content : 'Salut Benjamin' }```
 
-- <u>DELETE /notes/:id</u>
+- PATCH /notes/:id
 
-  Cette route permet à un utilisateur connecté de supprimer une de ses notes.
+Cette route permet à un utilisateur connecté de modifié une note existante.
 
-  Le jeton JWT de l'utilisateur connecté doit être fourni dans le header.
+Le jeton JWT de l'utilisateur connecté doit être fourni dans le header.
 
-  Le paramètre *id* doit contenir l'identifiant unique de la note à modifier.
+Le paramètre *id* doit contenir l'identifiant unique de la note à modifier.
+
+Le corps de la requête doit contenir :
+
+- ***content*** : contenu de la note saisie par l'utilisateur. (mise à jour)
+
+*Exemple* :
+
+​	`{ content : 'Note 1' }`
+
+
+
+- DELETE /notes/:id
+
+Cette route permet à un utilisateur connecté de supprimer une de ses notes.
+
+Le jeton JWT de l'utilisateur connecté doit être fourni dans le header.
+
+Le paramètre *id* doit contenir l'identifiant unique de la note à modifier.
+
