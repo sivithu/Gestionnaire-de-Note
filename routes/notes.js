@@ -1,9 +1,7 @@
   const MongoClient = require('mongodb').MongoClient;
   const express = require('express');
   const ObjectId = require('mongodb').ObjectId;
-  const fs = require('fs');
   const jwt = require('jsonwebtoken');
-  const config = require('../config.json');
 
   const url = process.env.MONGODB_URI || 'mongodb://localhost:27017';
   const JWT_KEY = process.env.JWT_KEY || 'JWT_SECRET_VAL';
@@ -72,8 +70,6 @@
               }
 
               const r = await db.collection('notes').insertOne(user_message);
-              const col = await db.collection('notes').find().toArray();
-
               client.close();
               res.send({
                   error: null,
@@ -130,7 +126,7 @@
                         note: updatedNote[0]
                       });
                   }
-                }).catch(error =>{
+                }).catch(err =>{
                   res.send({
                     error: err.stack,
                     notes: null
@@ -143,10 +139,10 @@
             error: err.stack,
             notes: null
           });
-      })
+      });
 
       client.close();
-  })
+  });
 
   // OK
   // Deletes a note from db with it's id given in url params
