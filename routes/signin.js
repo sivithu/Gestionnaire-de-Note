@@ -25,11 +25,11 @@ router.post('/', async function(req, res, next){
 
     client.connect()
     .then(async function(response){
-        CheckingParams(username, password, res);
+        //CheckingParams(username, password, res);
         const db = client.db(dbName);
         const sameUserNameInDb = await db.collection('users').find( {username: req.body.username, password: md5(password)} ).toArray();
 
-        if(sameUserNameInDb.length == 0){
+        if(sameUserNameInDb.length === 0){
           res.status(400).send({
             error: 'Cet identifiant est inconnu'
           });

@@ -24,25 +24,30 @@ router.post('/', async function(req, res, next){
 
       client.connect()
       .then(async function(response){
-          CheckingParams(username, password, res);
+          //cCheckingParams(username, password, res);
           const db = client.db(dbName);
           const sameUserNameInDb = await db.collection('users').find( {username: req.body.username} ).toArray();
 
+          console.log("YEEEEE")
           if(sameUserNameInDb.length > 0){
-            res.status(400).send({
+            res.status(403).send({
               error: 'Cet identifiant est déjà associé à un compte',
               token: null
             });
           } else {
+              console.log("toz")
             const newUser = {
               username: username,
               password: md5(password)
             }
 
+              console.log("AZERTYUIO1")
             const insertNewUser = await db.collection('users').insertOne(newUser);
+              console.log("AZERTYUIO2")
             const token = jwt.sign({ sub: username
                               }, JWT_KEY
                               , { expiresIn: '24h'});
+            console.log("AZERTYUIO")
             res.status(200).send({
               error: null,
               token
@@ -50,11 +55,8 @@ router.post('/', async function(req, res, next){
           }
           client.close();
       }).catch(function(error){
-        client.close();
-        res.status(500).send({
-          error: error,
-          token: null
-        });
+
+          client.close();
       });
 });
 
