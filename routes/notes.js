@@ -27,7 +27,8 @@
             })
           } else {
             const db = client.db(dbName);
-            const col = await db.collection('notes').find().sort({createdAt: -1}).toArray();
+            console.log(decoded.userId);
+            const col = await db.collection('notes').find({ userId: decoded.userid }).sort({createdAt: -1}).toArray();
 
             client.close();
             res.send({
@@ -48,7 +49,7 @@
 
   // Inserts a note in the db
   // OK
-  app.put('/',  async function(req, res){
+  app.post('/',  async function(req, res){
       var client = new MongoClient(url);
 
       client.connect()
@@ -70,9 +71,16 @@
               }
 
               const r = await db.collection('notes').insertOne(user_message);
+              const inseredNote = await db.collection('notes').find({ userId: decoded.userid }).toArray();
+              console.log(user_message);
               client.close();
               res.send({
                   error: null,
+                  _id: user_message._id,
+                  userId: decoded.userid,
+                  content: req.body.content,
+                  createdAt: getTodayDate(),
+                  lastUpdatedAt: null,
                   note: user_message
                 }
               );
@@ -91,7 +99,7 @@
   // Updates a note from db with it'ss id given in url params
   // OK
   // TODO: check if user is connected or send 401
-  app.patch('/:id', async function(req, res){
+  app.put('/', async function(req, res){
     var client = new MongoClient(url);
 
     client.connect()
@@ -105,7 +113,7 @@
               });
             } else {
                 const db = client.db(dbName);
-                const noteId = req.params.id.split('id=')[1];
+                const noteId = req.body._id;
 
                 const currentNote = await db.collection('notes').find({ _id: ObjectId(noteId) }).toArray();
                 checkBeforeUpdate(res, currentNote, decoded)
@@ -122,8 +130,8 @@
                       const updatedNote = await db.collection('notes').find({ _id: ObjectId(noteId) }).toArray();
 
                       res.status(200).send({
-                        error: null,
-                        note: updatedNote[0]
+                          error: null,
+                          content: updatedNote[0].content
                       });
                   }
                 }).catch(err =>{
@@ -146,7 +154,7 @@
 
   // OK
   // Deletes a note from db with it's id given in url params
-  app.delete('/:id', async function(req, res){
+  app.put('/delete', async function(req, res){
       var client = new MongoClient(url);
 
       client.connect()
@@ -160,7 +168,7 @@
             })
           } else{
             const db = client.db(dbName);
-            const noteId = req.params.id.split('id=')[1];
+            const noteId = req.body._id;
 
             const noteToDelete = await db.collection('notes').find({ _id: ObjectId(noteId) }).toArray();
             await checkBeforeDelete(res, noteToDelete, decoded)
@@ -224,13 +232,6 @@
             return false;
           }
       }
-      if(currentNote.length == 0){
-        res.status(404).send({
-          error: "Cet identifiant est inconnu",
-          note: {}
-        });
-        return false;
-      }
       return true;
   }
 
@@ -238,13 +239,7 @@
   // Checks if user can delete the note with 'noteId'
   // Also checks if a note exists in db with id == 'noteId'
   async function checkBeforeDelete(res, noteToDelete, decoded){
-      if(noteToDelete.length == 0){
-        res.status(404).send({
-          error: "Cet identifiant est inconnu",
-          note: {}
-        });
-        return false;
-      }
+
       if(noteToDelete.length > 0 && noteToDelete[0].userId != decoded.userid){
         res.status(403).send({
           error: "Accès non autorisé à cette note",
