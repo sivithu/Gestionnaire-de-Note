@@ -65,6 +65,7 @@
               const db = client.db(dbName);
               const user_message = {
                 userId: decoded.userid,
+                nickname: decoded.nickname,
                 content: req.body.content,
                 createdAt: getTodayDate(),
                 lastUpdatedAt: null,
@@ -78,6 +79,7 @@
                   error: null,
                   _id: user_message._id,
                   userId: decoded.userid,
+                  nickname: decoded.nickname,
                   content: req.body.content,
                   createdAt: getTodayDate(),
                   lastUpdatedAt: null,
@@ -131,7 +133,8 @@
 
                       res.status(200).send({
                           error: null,
-                          content: updatedNote[0].content
+                          content: updatedNote[0].content,
+                          lastUpdatedAt: updatedNote[0].lastUpdatedAt
                       });
                   }
                 }).catch(err =>{

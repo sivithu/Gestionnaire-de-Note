@@ -34,7 +34,7 @@ router.post('/', async function(req, res, next){
             error: 'Cet identifiant est inconnu'
           });
         } else {
-          const token = jwt.sign({ sub: username, userid: sameUserNameInDb[0]._id
+          const token = jwt.sign({ sub: username, nickname: sameUserNameInDb[0].nickname, userid: sameUserNameInDb[0]._id
                             }, JWT_KEY
                             , { expiresIn: '24h'});
           res.status(200).send({

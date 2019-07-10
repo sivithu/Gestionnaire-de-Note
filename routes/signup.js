@@ -20,6 +20,7 @@ var maj = /[A-Z]/g;
 router.post('/', async function(req, res, next){
       var client = new MongoClient(url);
       const username = req.body.username;
+      const nickname = req.body.nickname;
       const password = req.body.password;
 
       client.connect()
@@ -28,26 +29,22 @@ router.post('/', async function(req, res, next){
           const db = client.db(dbName);
           const sameUserNameInDb = await db.collection('users').find( {username: req.body.username} ).toArray();
 
-          console.log("YEEEEE")
           if(sameUserNameInDb.length > 0){
             res.status(403).send({
               error: 'Cet identifiant est déjà associé à un compte',
               token: null
             });
           } else {
-              console.log("toz")
             const newUser = {
               username: username,
+              nickname: nickname,
               password: md5(password)
             }
 
-              console.log("AZERTYUIO1")
             const insertNewUser = await db.collection('users').insertOne(newUser);
-              console.log("AZERTYUIO2")
             const token = jwt.sign({ sub: username
                               }, JWT_KEY
                               , { expiresIn: '24h'});
-            console.log("AZERTYUIO")
             res.status(200).send({
               error: null,
               token
